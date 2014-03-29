@@ -4,7 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /menu                       controllers.MenuController.retrieveMenu
+GET     /menu                       controllers.MenuController.indexMenu
 POST    /menu-orders                controllers.MenuController.placeOrder
 
 # Map static resources from the /public folder to the /assets URL path

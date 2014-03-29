@@ -14,9 +14,9 @@ case class OrderItem(quantity:Int, menuItem:MenuItem)
 case class MenuOrder(items: Seq[OrderItem])
 
 object MenuProtocol {
-  implicit val priceFormat = Json.writes[Price]
-  implicit val menuItemFormat = Json.writes[MenuItem]
-  implicit val menuFormat = Json.writes[Menu]
+  implicit val priceFormat = Json.format[Price]
+  implicit val menuItemFormat = Json.format[MenuItem]
+  implicit val menuFormat = Json.format[Menu]
   implicit val orderItemFormat = Json.format[OrderItem]
   implicit val menuOrderFormat = Json.format[MenuOrder]
 }
@@ -24,9 +24,15 @@ object MenuProtocol {
 object MenuController extends Controller{
   import MenuProtocol._
 
-  def retrieveMenu = Action {
-    val menu : Menu = Menu(Seq(MenuItem("Arroz chino 3 delícias", Price(4, "EUR")), MenuItem("Pato pekin", Price(4, "EUR")), MenuItem("Li chis", Price(2, "EUR"))))
-    Ok(Json.toJson(menu))
+  val menu : Menu = Menu(Seq(MenuItem("Arroz chino 3 delícias", Price(4, "EUR")), MenuItem("Pato pekin", Price(4, "EUR")), MenuItem("Li chis", Price(2, "EUR"))))
+
+  def indexMenu = Action { request =>
+    val accept = request.headers.get(ACCEPT).getOrElse("text/html")
+
+    accept match {
+      case "application/json" => Ok(Json.toJson(menu))
+      case _            => Ok(views.html.menu(menu))
+    }
   }
 
   def placeOrder = Action(parse.json) { request =>
